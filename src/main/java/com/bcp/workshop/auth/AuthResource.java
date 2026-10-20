@@ -7,6 +7,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.logging.Logger;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.HashMap;
@@ -16,6 +17,9 @@ import java.util.Map;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthResource {
+    private static final Logger LOG = Logger.getLogger(AuthResource.class);
+    private static final String GENERIC_ERROR_MESSAGE = "Internal server error";
+
     @Inject
     LegacyDatabase database;
 
@@ -39,7 +43,7 @@ public class AuthResource {
                             String token = LegacyTokenUtil.create(user.username(), user.role());
                             Map<String, Object> response = new HashMap<>();
                             response.put("token", token);
-                            response.put("expiresIn", 3600);
+                            response.put("expiresIn", LegacyTokenUtil.TOKEN_TTL_SECONDS);
                             response.put("user", Map.of(
                                     "username", user.username(),
                                     "displayName", StringEscapeUtils.escapeHtml4(user.displayName()),
@@ -52,10 +56,8 @@ public class AuthResource {
                 }
             }
         } catch (Exception error) {
-            return Response.status(500).entity(Map.of(
-                    "message", error.getMessage() == null ? "Unknown error" : error.getMessage(),
-                    "exception", error.getClass().getName()
-            )).build();
+            LOG.error("Unexpected error during authentication", error);
+            return Response.status(500).entity(Map.of("message", GENERIC_ERROR_MESSAGE)).build();
         }
     }
 }
