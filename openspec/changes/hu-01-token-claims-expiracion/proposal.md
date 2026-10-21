@@ -40,8 +40,10 @@ ENDPOINTS.md (baseline del Día 1) documenta dos puntos que el Issue cambia de f
 
 Al implementar, ENDPOINTS.md debe actualizarse con estos dos cambios. Riesgo: cualquier cliente que no envíe `client` dejará de funcionar; no se verificó el frontend porque está fuera de alcance.
 
-## Decisiones abiertas
-- Tolerancia entre `expiresIn` y `exp - now`: propuesta de 5 segundos, por confirmar.
-- Validación de `client`: propuesta de no vacío tras `trim()` y máximo 64 caracteres, por confirmar.
-- Comportamiento sin `AUTH_TOKEN_SECRET`: propuesta de fallo de arranque en perfil de producción.
+## Decisiones confirmadas
+- Tolerancia entre `expiresIn` y `exp - now`: 5 segundos.
+- Validación de `client`: no vacío tras `trim()` y máximo 64 caracteres.
+- Sin `AUTH_TOKEN_SECRET` en producción: fallo al arrancar.
+
+## Decisiones pendientes
 - HMAC frente a librería JWT: se documenta la decisión en esta propuesta; la elección queda pendiente de revisión.
